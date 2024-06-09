@@ -23,6 +23,7 @@ export default {
         try {
           const headers = []
           let jsonData = []
+          const name = event.target.files[0].name.replace(/\.[^/.]+$/, "")
 
           await csv()
             .preFileLine((fileLine, lineIdx) => {
@@ -41,7 +42,7 @@ export default {
               ...this.csvList,
               {
                 id: this.csvList.length,
-                name: event.target.files[0].name,
+                name,
                 rows: jsonData.length,
                 columns: headers,
                 isExported: false,
@@ -53,7 +54,7 @@ export default {
             this.$emit("updateList", [
               {
                 id: 0,
-                name: event.target.files[0].name,
+                name,
                 rows: jsonData.length,
                 columns: headers,
                 isExported: false,
