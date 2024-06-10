@@ -9,7 +9,6 @@
       >
     </div>
   </div>
-  <span>{{ visibleColumns }}</span>
   <q-table
     v-if="filteredCsv"
     :title="filteredCsv.name"
@@ -51,15 +50,15 @@ type CsvList = Array<{
   content: Array<any>
 }>
 
-const csvDetail = null as { id: string; name: string; content: Array<any> } | null
-const filteredCsv = null as { id: string; name: string; content: Array<any> } | null
-const columns = [] as Array<any>
-const visibleColumns = [] as string[]
-
 export default {
   name: "CsvDetail",
   components: { BackSvg },
   data() {
+    const csvDetail = null as { id: string; name: string; content: Array<any> } | null
+    const filteredCsv = null as { id: string; name: string; content: Array<any> } | null
+    const columns = [] as Array<any>
+    const visibleColumns = [] as string[]
+
     return {
       filteredCsv,
       csvDetail,
