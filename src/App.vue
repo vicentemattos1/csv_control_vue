@@ -29,7 +29,7 @@ export default {
   --gray-850: #1f2729;
   --gray-900: #121214;
 
-  --cyan-500: #61dafb;
+  --cyan-500: #00c8ff;
   --yellow-500: #eba417;
 }
 

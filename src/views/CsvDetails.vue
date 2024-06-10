@@ -14,7 +14,7 @@
     :title="filteredCsv.name"
     :rows="filteredCsv.content"
     :columns="columns"
-    row-key="name"
+    row-key="id"
     header-align="left"
     selection="multiple"
     v-model:selected="selected"
@@ -85,7 +85,6 @@ export default {
     if (csvItem) {
       this.filteredCsv = csvItem
       this.csvDetail = csvItem
-
       for (const column of csvItem.columns) {
         this.columns.push({ name: column, label: column, field: column, align: "left", sortable: true })
         this.visibleColumns.push(column)
