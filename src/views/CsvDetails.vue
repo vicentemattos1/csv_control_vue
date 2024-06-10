@@ -4,12 +4,16 @@
     <BtnDropdown :columns="columns" :visibleColumns="visibleColumns" @updateVisibleColumns="updateVisibleColumns" />
     <div class="actionButtons">
       <q-btn @click="confirm = true" class="actionButton" outline rounded label="Exportar tabela" />
-      <q-btn to="/" class="actionButton" outline rounded label="<- Voltar" />
+      <q-btn to="/" class="actionButton" outline rounded
+        ><div class="backButton"><BackSvg /> Voltar</div></q-btn
+      >
     </div>
   </div>
+  <span>{{ visibleColumns }}</span>
   <q-table
-    v-if="csvDetail"
-    :rows="csvDetail.content"
+    v-if="filteredCsv"
+    :title="filteredCsv.name"
+    :rows="filteredCsv.content"
     :columns="columns"
     row-key="name"
     header-align="left"
@@ -35,6 +39,7 @@
 import { ref } from "vue"
 import { useRoute } from "vue-router"
 import { exportToExcel } from "../utils/exportToXlsx"
+import BackSvg from "../assets/back.svg?component"
 
 type CsvList = Array<{
   id: string
@@ -47,14 +52,16 @@ type CsvList = Array<{
 }>
 
 const csvDetail = null as { id: string; name: string; content: Array<any> } | null
+const filteredCsv = null as { id: string; name: string; content: Array<any> } | null
 const columns = [] as Array<any>
 const visibleColumns = [] as string[]
 
 export default {
   name: "CsvDetail",
-  components: {},
+  components: { BackSvg },
   data() {
     return {
+      filteredCsv,
       csvDetail,
       columns,
       visibleColumns,
@@ -77,19 +84,42 @@ export default {
     const csvList = (localStorageCsvList ? JSON.parse(localStorageCsvList) : []) as CsvList
     const csvItem = csvList.find((item) => item.id == this.csvId)
     if (csvItem) {
+      this.filteredCsv = csvItem
       this.csvDetail = csvItem
+
       for (const column of csvItem.columns) {
         this.columns.push({ name: column, label: column, field: column, align: "left", sortable: true })
+        this.visibleColumns.push(column)
       }
-      this.visibleColumns = this.columns.map((item) => item.name)
     }
   },
   methods: {
     updateVisibleColumns(newVisibleColumns: string[]) {
-      this.visibleColumns = newVisibleColumns
+      if (this.csvDetail) {
+        this.visibleColumns = newVisibleColumns
+
+        this.filteredCsv = {
+          ...this.csvDetail,
+          content: this.csvDetail.content.map((obj) => {
+            let filteredObj: { [key: string]: any } = {}
+            newVisibleColumns.forEach((key) => {
+              if (obj.hasOwnProperty(key)) {
+                filteredObj[key] = obj[key]
+              }
+            })
+            return filteredObj
+          }),
+        }
+      }
     },
     exportTable(selected: Array<any>) {
-      exportToExcel(selected, this.csvDetail?.name)
+      if (selected.length > 0) {
+        exportToExcel(selected, this.filteredCsv?.name)
+      } else {
+        if (this.filteredCsv) {
+          exportToExcel(this.filteredCsv.content, this.filteredCsv.name)
+        }
+      }
     },
   },
 }
@@ -110,6 +140,14 @@ export default {
 .actionButton {
   text-transform: none;
   min-height: 1.5rem;
+}
+.backButton {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+.backButton svg {
+  width: 20px;
 }
 
 .confirm-dialog .q-card {

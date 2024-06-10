@@ -14,9 +14,9 @@
       <q-item clickable v-close-popup v-for="(item, index) in columns" :key="index" @click="hideColumn(item.name)">
         <q-item-section>
           <q-toggle
-            :v-model="visibleColumns.includes(item.name)"
-            :val="item.name"
-            :label="`Esconder columns ${item.name}`"
+            :model-value="visibleColumns.includes(item.name)"
+            @click="hideColumn(item.name, visibleColumns.includes(item.name))"
+            :label="`Esconder coluna ${item.name}`"
           />
         </q-item-section>
       </q-item>
@@ -36,6 +36,15 @@ export default {
     },
     showAllColumns() {
       this.$emit("updateVisibleColumns", this.columns)
+    },
+    hideColumn(item, checked) {
+      let updatedVisibleColumns = []
+      if (checked) {
+        updatedVisibleColumns = this.visibleColumns.filter((column) => column !== item)
+      } else {
+        updatedVisibleColumns = [...this.visibleColumns, item]
+      }
+      this.$emit("updateVisibleColumns", updatedVisibleColumns)
     },
   },
   props: ["columns", "visibleColumns", "updateVisibleColumns"],
