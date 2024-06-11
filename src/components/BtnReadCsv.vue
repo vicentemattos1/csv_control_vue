@@ -34,7 +34,12 @@ export default {
             })
             .fromString(csvData)
             .then((jsonArray) => {
-              jsonData = jsonArray
+              jsonData = jsonArray.map((item, index) => {
+                return {
+                  ...item,
+                  id: index,
+                }
+              })
             })
 
           if (this.csvList.length >= 1) {
